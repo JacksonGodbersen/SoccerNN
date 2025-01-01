@@ -1,13 +1,13 @@
 import Environment
-import main
+import PolicyNetwork
 
 env = Environment.Environment()
 
-model1 = main.NueralNetwork()
-model2 = main.NueralNetwork()
-model3 = main.NueralNetwork()
-model4 = main.NueralNetwork()
+model1 = PolicyNetwork.NueralNetwork()
+model2 = PolicyNetwork.NueralNetwork()
+model3 = PolicyNetwork.NueralNetwork()
+model4 = PolicyNetwork.NueralNetwork()
 
-env.run(model1, model2, model3, model4)
+result = env.run(model1, model2, model3, model4)
 
-env.run()
+print(result)

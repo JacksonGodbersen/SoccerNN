@@ -13,7 +13,7 @@ def draw(window, space, draw_options):
     pygame.display.update()
 
 
-def create_circle(self, space, radius, mass, position, color):
+def create_circle(space, radius, mass, position, color):
     body = pymunk.Body()
     body.position = position
     shape = pymunk.Circle(body, radius)
@@ -23,7 +23,7 @@ def create_circle(self, space, radius, mass, position, color):
     space.add(body, shape)
     return shape
 
-def create_boundaries(self, space, width, height):
+def create_boundaries(space, width, height):
     rects = [
         [(width / 2, height - 10), (width, 20)],
         [(width / 2, 10), (width, 20)],
