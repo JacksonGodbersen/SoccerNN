@@ -10,7 +10,7 @@ import main
 pygame.init()
 
 WIDTH, HEIGHT = 1000, 800
-FORCE_MAGNITUDE = 2000
+FORCE_MAGNITUDE = 500
 MAX_VELOCITY = 1000
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -77,35 +77,40 @@ def run(window, model1, model2, model3, model4, width, height):
 
     while run:
 
-        input_vector = []
+        v1 = [(circle.body.position.x / WIDTH) * 2 - 1, (circle.body.position.y / HEIGHT) * 2 - 1, (circle.body.velocity.x / MAX_VELOCITY) * 2 - 1, (circle.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v2 = [(agent2.body.position.x / WIDTH) * 2 - 1, (agent2.body.position.y / HEIGHT) * 2 - 1, (agent2.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v3 = [(agent3.body.position.x / WIDTH) * 2 - 1, (agent3.body.position.y / HEIGHT) * 2 - 1, (agent3.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent3.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v4 = [(agent4.body.position.x / WIDTH) * 2 - 1, (agent4.body.position.y / HEIGHT) * 2 - 1, (agent4.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent4.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v5 = [(soccer_ball.body.position.x / WIDTH) * 2 - 1, (soccer_ball.body.position.y / HEIGHT) * 2 - 1, (soccer_ball.body.velocity.x / MAX_VELOCITY) * 2 - 1, (soccer_ball.body.velocity.y / MAX_VELOCITY) * 2 - 1]
 
-        input_vector.extend([(circle.body.position.x / WIDTH) * 2 - 1, (circle.body.position.y / HEIGHT) * 2 - 1])
-        input_vector.extend(
-            [(circle.body.velocity.x / MAX_VELOCITY) * 2 - 1, (circle.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+        v1_flipped = [(-circle.body.position.x / WIDTH) * 2 - 1, (circle.body.position.y / HEIGHT) * 2 - 1,
+              (-circle.body.velocity.x / MAX_VELOCITY) * 2 - 1, (circle.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v2_flipped = [(-agent2.body.position.x / WIDTH) * 2 - 1, (agent2.body.position.y / HEIGHT) * 2 - 1,
+              (-agent2.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v3_flipped = [(-agent3.body.position.x / WIDTH) * 2 - 1, (agent3.body.position.y / HEIGHT) * 2 - 1,
+              (-agent3.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent3.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v4_flipped = [(agent4.body.position.x / WIDTH) * 2 - 1, (agent4.body.position.y / HEIGHT) * 2 - 1,
+              (-agent4.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent4.body.velocity.y / MAX_VELOCITY) * 2 - 1]
+        v5_flipped = [(-soccer_ball.body.position.x / WIDTH) * 2 - 1, (soccer_ball.body.position.y / HEIGHT) * 2 - 1,
+              (-soccer_ball.body.velocity.x / MAX_VELOCITY) * 2 - 1,
+              (soccer_ball.body.velocity.y / MAX_VELOCITY) * 2 - 1]
 
-        input_vector.extend([(agent2.body.position.x / WIDTH) * 2 - 1, (agent2.body.position.y / HEIGHT) * 2 - 1])
-        input_vector.extend(
-            [(agent2.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+        in1 = v1 + v2 + v3 + v4 + v5
+        in2 = v2 + v1 + v3 + v4 + v5
+        in3 = v3_flipped + v4_flipped + v1_flipped + v2_flipped + v5_flipped
+        in4 = v4_flipped + v3_flipped + v1_flipped + v2_flipped + v5_flipped
 
-        input_vector.extend([(agent3.body.position.x / WIDTH) * 2 - 1, (agent3.body.position.y / HEIGHT) * 2 - 1])
-        input_vector.extend(
-            [(agent3.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent3.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+        input_tensor1 = 1 * torch.tensor(in1, dtype=torch.float32).unsqueeze(0)
+        input_tensor2 = 1 * torch.tensor(in2, dtype=torch.float32).unsqueeze(0)
+        input_tensor3 = -1 * torch.tensor(in3, dtype=torch.float32).unsqueeze(0)
+        input_tensor4 = -1 * torch.tensor(in4, dtype=torch.float32).unsqueeze(0)
 
-        input_vector.extend([(agent4.body.position.x / WIDTH) * 2 - 1, (agent4.body.position.y / HEIGHT) * 2 - 1])
-        input_vector.extend(
-            [(agent4.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent4.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+        print(v1)
 
-        input_vector.extend(
-            [(soccer_ball.body.position.x / WIDTH) * 2 - 1, (soccer_ball.body.position.y / HEIGHT) * 2 - 1])
-        input_vector.extend([(soccer_ball.body.velocity.x / MAX_VELOCITY) * 2 - 1,
-                             (soccer_ball.body.velocity.y / MAX_VELOCITY) * 2 - 1])
-
-        input_tensor = torch.tensor(input_vector, dtype=torch.float32).unsqueeze(0)
-
-        y1 = model1.forward(input_tensor)
-        y2 = model2.forward(input_tensor)
-        y3 = model3.forward(input_tensor)
-        y4 = model4.forward(input_tensor)
+        y1 = model1.forward(input_tensor1)
+        y2 = model2.forward(input_tensor2)
+        y3 = model3.forward(input_tensor3)
+        y4 = model4.forward(input_tensor4)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -129,11 +134,11 @@ def run(window, model1, model2, model3, model4, width, height):
 
         agent3_force_x = FORCE_MAGNITUDE * y3[0] * math.cos(y3[1])
         agent3_force_y = FORCE_MAGNITUDE * y3[0] * math.sin(y3[1])
-        agent3.body.apply_impulse_at_local_point((agent3_force_x, agent3_force_y), (0, 0))
+        agent3.body.apply_impulse_at_local_point((-agent3_force_x, agent3_force_y), (0, 0))
 
         agent4_force_x = FORCE_MAGNITUDE * y4[0] * math.cos(y4[1])
         agent4_force_y = FORCE_MAGNITUDE * y4[0] * math.sin(y4[1])
-        agent4.body.apply_impulse_at_local_point((agent4_force_x, agent4_force_y), (0, 0))
+        agent4.body.apply_impulse_at_local_point((-agent4_force_x, agent4_force_y), (0, 0))
 
         circle.body.velocity = circle.body.velocity * .99
         agent2.body.velocity = agent2.body.velocity * .99

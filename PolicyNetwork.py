@@ -15,11 +15,12 @@ class NueralNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(512, 2)
         )
+
     def forward(self, x):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         force_magnitude = torch.sigmoid(logits[:, 0]).item()
-        force_direction = (torch.sigmoid(logits[:, 1]) * 2 * torch.pi).item()
+        force_direction = (torch.cos(logits[:, 1]) * 2 * torch.pi).item()
         return force_magnitude, force_direction
 
 
