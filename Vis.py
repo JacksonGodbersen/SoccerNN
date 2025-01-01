@@ -2,11 +2,15 @@ import pygame
 import pymunk
 import pymunk.pygame_util
 import math
+import torch
+
+import main
 
 pygame.init()
 
 WIDTH, HEIGHT = 1000, 800
 FORCE_MAGNITUDE = 2000
+MAX_VELOCITY = 100
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 
@@ -17,13 +21,6 @@ def draw(window, space, draw_options):
 
 
 def create_boundaries(space, width, height):
-    goal_size = 100
-    # rects = [
-    #     [(width / 2, height - 10), (width, 20)],
-    #     [(width / 2, 10), (width, 20)],
-    #     [(10, height / 2), (20, height)],
-    #     [(width - 10, height / 2), (20, height)]
-    # ]
 
     rects = [
         [(width/2, height - 10), (width, 20)],
@@ -56,7 +53,7 @@ def create_circle(space, radius, mass, position, color):
     return shape
 
 
-def run(window, width, height):
+def run(window, model, width, height):
     run = True
     clock = pygame.time.Clock()
     fps = 60
@@ -78,10 +75,42 @@ def run(window, width, height):
 
 
     while run:
+
+        input_vector = []
+
+        input_vector.extend([(circle.body.position.x / WIDTH) * 2 - 1, (circle.body.position.y / HEIGHT) * 2 - 1])
+        input_vector.extend(
+            [(circle.body.velocity.x / MAX_VELOCITY) * 2 - 1, (circle.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+
+        input_vector.extend([(agent2.body.position.x / WIDTH) * 2 - 1, (agent2.body.position.y / HEIGHT) * 2 - 1])
+        input_vector.extend(
+            [(agent2.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+
+        input_vector.extend([(agent3.body.position.x / WIDTH) * 2 - 1, (agent3.body.position.y / HEIGHT) * 2 - 1])
+        input_vector.extend(
+            [(agent3.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent3.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+
+        input_vector.extend([(agent4.body.position.x / WIDTH) * 2 - 1, (agent4.body.position.y / HEIGHT) * 2 - 1])
+        input_vector.extend(
+            [(agent4.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent4.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+
+        input_vector.extend(
+            [(soccer_ball.body.position.x / WIDTH) * 2 - 1, (soccer_ball.body.position.y / HEIGHT) * 2 - 1])
+        input_vector.extend([(soccer_ball.body.velocity.x / MAX_VELOCITY) * 2 - 1,
+                             (soccer_ball.body.velocity.y / MAX_VELOCITY) * 2 - 1])
+
+        input_tensor = torch.tensor(input_vector, dtype=torch.float32).unsqueeze(0)
+
+        y = model.forward(input_tensor)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
+
+            agent3_force_x = FORCE_MAGNITUDE * y[0] * math.cos(y[1])
+            agent3_force_y = FORCE_MAGNITUDE * y[0] * math.sin(y[1])
+            agent3.body.apply_impulse_at_local_point((agent3_force_x, agent3_force_y), (0, 0))
 
             if event.type == pygame.KEYDOWN:
                 if event.type == pygame.KEYDOWN:
@@ -113,5 +142,6 @@ def run(window, width, height):
 
     pygame.quit()
 
-if __name__ == "__main__":
-    run(window, WIDTH, HEIGHT)
+model = main.NueralNetwork()
+
+run(window, model, WIDTH, HEIGHT)
