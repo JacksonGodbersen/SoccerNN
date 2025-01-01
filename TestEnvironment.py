@@ -4,6 +4,7 @@ import pymunk.pygame_util
 import math
 import torch
 
+import PolicyNetwork
 import main
 
 pygame.init()
@@ -62,13 +63,13 @@ def run(window, model1, model2, model3, model4, width, height):
     space = pymunk.Space()
     space.gravity = (0, 0)
 
-    circle = create_circle(space, 30, 10, (300, 300), (255, 0, 0, 100))
-    agent2 = create_circle(space, 30, 10, (300, 400), (255, 0, 0, 100))
+    circle = create_circle(space, 15, 10, (300, 300), (255, 0, 0, 100))
+    agent2 = create_circle(space, 15, 10, (300, 400), (255, 0, 0, 100))
 
-    agent3 = create_circle(space, 30, 10, (WIDTH - 300, 300), (255, 125, 180, 100))
-    agent4 = create_circle(space, 30, 10, (WIDTH - 300, 400), (255, 125, 180, 100))
+    agent3 = create_circle(space, 15, 10, (WIDTH - 300, 300), (255, 125, 180, 100))
+    agent4 = create_circle(space, 15, 10, (WIDTH - 300, 400), (255, 125, 180, 100))
 
-    soccer_ball = create_circle(space, 15, 4, (500, 400), (0, 0, 0, 100))
+    soccer_ball = create_circle(space, 7.5, 4, (500, 400), (0, 0, 0, 100))
     create_boundaries(space, width, height)
 
     draw_options = pymunk.pygame_util.DrawOptions(window)
@@ -142,8 +143,6 @@ def run(window, model1, model2, model3, model4, width, height):
 
         soccer_ball.body.velocity = soccer_ball.body.velocity * .995
 
-        print(circle.body.velocity)
-
         if soccer_ball.body.position[0] < 5 or soccer_ball.body.position[0] > WIDTH - 5:
             print("Goal scored")
             run = False
@@ -155,9 +154,9 @@ def run(window, model1, model2, model3, model4, width, height):
 
     pygame.quit()
 
-model1 = main.NueralNetwork()
-model2 = main.NueralNetwork()
-model3 = main.NueralNetwork()
-model4 = main.NueralNetwork()
+model1 = PolicyNetwork.NueralNetwork()
+model2 = PolicyNetwork.NueralNetwork()
+model3 = PolicyNetwork.NueralNetwork()
+model4 = PolicyNetwork.NueralNetwork()
 
 run(window, model1, model2, model3, model4, WIDTH, HEIGHT)

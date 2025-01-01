@@ -46,13 +46,13 @@ def create_boundaries(space, width, height):
 
 class Environment:
 
-    pygame.init()
+    #pygame.init()
 
     WIDTH, HEIGHT = 1000, 800
     FORCE_MAGNITUDE = 2000
     MAX_VELOCITY = 1000
 
-    window = pygame.display.set_mode((WIDTH, HEIGHT))
+    #window = pygame.display.set_mode((WIDTH, HEIGHT))
 
     def run(self, model1, model2, model3, model4):
         run = True
@@ -72,7 +72,7 @@ class Environment:
         soccer_ball = create_circle(space, 15, 4, (500, 400), (0, 0, 0, 100))
         create_boundaries(space, self.WIDTH, self.HEIGHT)
 
-        draw_options = pymunk.pygame_util.DrawOptions(self.window)
+        #draw_options = pymunk.pygame_util.DrawOptions(self.window)
 
 
         while run:
@@ -138,11 +138,11 @@ class Environment:
                 return -1
 
 
-            draw(self.window, space, draw_options)
+            #draw(self.window, space, draw_options)
             space.step(dt)
             clock.tick(fps)
 
-        pygame.quit()
+        #pygame.quit()
 
 # model1 = main.NueralNetwork()
 # model2 = main.NueralNetwork()
