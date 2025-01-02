@@ -4,8 +4,6 @@ import pymunk.pygame_util
 import math
 import torch
 
-import main
-
 
 def draw(window, space, draw_options):
     window.fill("white")
@@ -142,10 +140,10 @@ class Environment:
 
             soccer_ball.body.velocity = soccer_ball.body.velocity * .995
 
-            if soccer_ball.body.position[0] < 5:
+            if soccer_ball.body.position[0] > self.WIDTH - 5:
                 return 1
 
-            elif soccer_ball.body.position[0] > self.WIDTH - 5:
+            elif soccer_ball.body.position[0] < 5:
                 return -1
 
             if time_step >= 500:

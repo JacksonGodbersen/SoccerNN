@@ -5,7 +5,6 @@ import math
 import torch
 
 import PolicyNetwork
-import main
 
 pygame.init()
 
