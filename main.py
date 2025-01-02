@@ -13,7 +13,7 @@ import concurrent.futures
 from multiprocessing import freeze_support
 import Environment
 import PolicyNetwork
-
+import torch
 import random
 from collections import defaultdict
 
@@ -117,12 +117,74 @@ def simulate_generation(agent_list, matches):
     return agent_list, agent_wins
 
 
+def mutate_model(model, mutation_rate=0.1, mutation_strength=0.05):
+    # Clone the model
+    new_model = PolicyNetwork.NueralNetwork()
+
+    # Get the state dict of the original model and apply mutation
+    state_dict = model.state_dict()
+    new_state_dict = {}
+
+    for name, param in state_dict.items():
+        # Apply mutation only on some parameters based on mutation_rate
+        if random.random() < mutation_rate:  # If mutation occurs on this parameter
+            # Apply random noise (mutation_strength controls how much to change)
+            noise = torch.randn_like(param) * mutation_strength
+            new_state_dict[name] = param + noise
+        else:
+            new_state_dict[name] = param
+
+    # Load the modified parameters into the new model
+    new_model.load_state_dict(new_state_dict)
+    return new_model
+
+def save_model(model, filepath="model_0.pth"):
+    # Save the model's state_dict
+    torch.save(model.state_dict(), filepath)
+
+
+def generation_step(agent_list, matches):
+    # Simulate the generation to get the win list
+    agent_list, win_list = simulate_generation(agent_list, matches)
+
+    next_generation = []
+
+    # Step 1: Keep agents that have won more than half of their games
+    winners = [i for i in range(100) if win_list[i] > 10]
+
+    # Step 2: Add winners to the next generation
+    for i in winners:
+        next_generation.append(agent_list[i])
+
+    # Step 3: Replace losers with mutated versions of winners
+    num_winners = len(winners)
+    for i in range(100):
+        if win_list[i] <= 10:  # If the agent is a loser
+            # Randomly select a winner and mutate their model
+            winner_idx = random.choice(winners)
+            next_generation.append(mutate_model(agent_list[winner_idx]))
+
+    max_idx = win_list.index(max(win_list))
+    best_agent = agent_list[max_idx]
+    save_model(best_agent)
+
+    return next_generation
+
+
 if __name__ == "__main__":
     agent_list = initialize_agents()
     matches = generate_matches()
-    agent_list, agent_wins = simulate_generation(agent_list, matches)
 
-    print("---------")
-    print(agent_wins)
+    while True:
+        agent_list = generation_step(agent_list, matches)
+
+    # import torch
+    #
+    # modelA = initialize_agents()[0]
+    # model = mutate_model(modelA)
+
+    # for name, param in model.named_parameters():
+    #     print(f"{name} - Shape: {param.shape}")
+    #     print(param)  # This will print the values of the weights/biases
 
 
