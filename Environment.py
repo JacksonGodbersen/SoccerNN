@@ -74,42 +74,53 @@ class Environment:
 
         #draw_options = pymunk.pygame_util.DrawOptions(self.window)
 
+        time_step = 0
 
         while run:
 
-            input_vector = []
+            v1 = [(agent1.body.position.x / self.WIDTH) * 2 - 1, (agent1.body.position.y / self.HEIGHT) * 2 - 1,
+                  (agent1.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent1.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v2 = [(agent2.body.position.x / self.WIDTH) * 2 - 1, (agent2.body.position.y / self.HEIGHT) * 2 - 1,
+                  (agent2.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v3 = [(agent3.body.position.x / self.WIDTH) * 2 - 1, (agent3.body.position.y / self.HEIGHT) * 2 - 1,
+                  (agent3.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent3.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v4 = [(agent4.body.position.x / self.WIDTH) * 2 - 1, (agent4.body.position.y / self.HEIGHT) * 2 - 1,
+                  (agent4.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent4.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v5 = [(soccer_ball.body.position.x / self.WIDTH) * 2 - 1, (soccer_ball.body.position.y / self.HEIGHT) * 2 - 1,
+                  (soccer_ball.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
+                  (soccer_ball.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
 
-            input_vector.extend([(agent1.body.position.x / self.WIDTH) * 2 - 1, (agent1.body.position.y / self.HEIGHT) * 2 - 1])
-            input_vector.extend(
-                [(agent1.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent1.body.velocity.y / self.MAX_VELOCITY) * 2 - 1])
+            v1_flipped = [(-agent1.body.position.x / self.WIDTH) * 2 - 1, (agent1.body.position.y / self.HEIGHT) * 2 - 1,
+                          (-agent1.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
+                          (agent1.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v2_flipped = [(-agent2.body.position.x / self.WIDTH) * 2 - 1, (agent2.body.position.y / self.HEIGHT) * 2 - 1,
+                          (-agent2.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
+                          (agent2.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v3_flipped = [(-agent3.body.position.x / self.WIDTH) * 2 - 1, (agent3.body.position.y / self.HEIGHT) * 2 - 1,
+                          (-agent3.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
+                          (agent3.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v4_flipped = [(agent4.body.position.x / self.WIDTH) * 2 - 1, (agent4.body.position.y / self.HEIGHT) * 2 - 1,
+                          (-agent4.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
+                          (agent4.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
+            v5_flipped = [(-soccer_ball.body.position.x / self.WIDTH) * 2 - 1,
+                          (soccer_ball.body.position.y / self.HEIGHT) * 2 - 1,
+                          (-soccer_ball.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
+                          (soccer_ball.body.velocity.y / self.MAX_VELOCITY) * 2 - 1]
 
-            input_vector.extend([(agent2.body.position.x / self.WIDTH) * 2 - 1, (agent2.body.position.y / self.HEIGHT) * 2 - 1])
-            input_vector.extend(
-                [(agent2.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / self.MAX_VELOCITY) * 2 - 1])
+            in1 = v1 + v2 + v3 + v4 + v5
+            in2 = v2 + v1 + v3 + v4 + v5
+            in3 = v3_flipped + v4_flipped + v1_flipped + v2_flipped + v5_flipped
+            in4 = v4_flipped + v3_flipped + v1_flipped + v2_flipped + v5_flipped
 
-            input_vector.extend([(agent3.body.position.x / self.WIDTH) * 2 - 1, (agent3.body.position.y / self.HEIGHT) * 2 - 1])
-            input_vector.extend(
-                [(agent3.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent3.body.velocity.y / self.MAX_VELOCITY) * 2 - 1])
+            input_tensor1 = 1 * torch.tensor(in1, dtype=torch.float32).unsqueeze(0)
+            input_tensor2 = 1 * torch.tensor(in2, dtype=torch.float32).unsqueeze(0)
+            input_tensor3 = -1 * torch.tensor(in3, dtype=torch.float32).unsqueeze(0)
+            input_tensor4 = -1 * torch.tensor(in4, dtype=torch.float32).unsqueeze(0)
 
-            input_vector.extend([(agent4.body.position.x / self.WIDTH) * 2 - 1, (agent4.body.position.y / self.HEIGHT) * 2 - 1])
-            input_vector.extend(
-                [(agent4.body.velocity.x / self.MAX_VELOCITY) * 2 - 1, (agent4.body.velocity.y / self.MAX_VELOCITY) * 2 - 1])
-
-            input_vector.extend(
-                [(soccer_ball.body.position.x / self.WIDTH) * 2 - 1, (soccer_ball.body.position.y / self.HEIGHT) * 2 - 1])
-            input_vector.extend([(soccer_ball.body.velocity.x / self.MAX_VELOCITY) * 2 - 1,
-                                 (soccer_ball.body.velocity.y / self.MAX_VELOCITY) * 2 - 1])
-
-            input_tensor = torch.tensor(input_vector, dtype=torch.float32).unsqueeze(0)
-
-            y1 = model1.forward(input_tensor)
-            y2 = model2.forward(input_tensor)
-            y3 = model3.forward(input_tensor)
-            y4 = model4.forward(input_tensor)
-
-            agent1_force_x = self.FORCE_MAGNITUDE * y1[0] * math.cos(y1[1])
-            agent1_force_y = self.FORCE_MAGNITUDE * y1[0] * math.sin(y1[1])
-            agent1.body.apply_impulse_at_local_point((agent1_force_x, agent1_force_y), (0, 0))
+            y1 = model1.forward(input_tensor1)
+            y2 = model2.forward(input_tensor2)
+            y3 = model3.forward(input_tensor3)
+            y4 = model4.forward(input_tensor4)
 
             agent2_force_x = self.FORCE_MAGNITUDE * y2[0] * math.cos(y2[1])
             agent2_force_y = self.FORCE_MAGNITUDE * y2[0] * math.sin(y2[1])
@@ -117,11 +128,11 @@ class Environment:
 
             agent3_force_x = self.FORCE_MAGNITUDE * y3[0] * math.cos(y3[1])
             agent3_force_y = self.FORCE_MAGNITUDE * y3[0] * math.sin(y3[1])
-            agent3.body.apply_impulse_at_local_point((agent3_force_x, agent3_force_y), (0, 0))
+            agent3.body.apply_impulse_at_local_point((-agent3_force_x, agent3_force_y), (0, 0))
 
             agent4_force_x = self.FORCE_MAGNITUDE * y4[0] * math.cos(y4[1])
             agent4_force_y = self.FORCE_MAGNITUDE * y4[0] * math.sin(y4[1])
-            agent4.body.apply_impulse_at_local_point((agent4_force_x, agent4_force_y), (0, 0))
+            agent4.body.apply_impulse_at_local_point((-agent4_force_x, agent4_force_y), (0, 0))
 
             agent1.body.velocity = agent1.body.velocity * .99
             agent2.body.velocity = agent2.body.velocity * .99
@@ -137,6 +148,10 @@ class Environment:
             elif soccer_ball.body.position[0] > self.WIDTH - 5:
                 return -1
 
+            if time_step >= 500:
+                return 0
+
+            time_step += 1
 
             #draw(self.window, space, draw_options)
             space.step(dt)

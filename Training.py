@@ -4,7 +4,6 @@ import PolicyNetwork
 env = Environment.Environment()
 
 
-
 for i in range(10000):
     model1 = PolicyNetwork.NueralNetwork()
     model2 = PolicyNetwork.NueralNetwork()

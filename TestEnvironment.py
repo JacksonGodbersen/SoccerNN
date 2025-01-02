@@ -57,7 +57,7 @@ def create_circle(space, radius, mass, position, color):
 def run(window, model1, model2, model3, model4, width, height):
     run = True
     clock = pygame.time.Clock()
-    fps = 60
+    fps = 10
     dt = 1 / fps
 
     space = pymunk.Space()
@@ -74,8 +74,10 @@ def run(window, model1, model2, model3, model4, width, height):
 
     draw_options = pymunk.pygame_util.DrawOptions(window)
 
-
+    i = 0
     while run:
+        i += 1
+        print(i)
 
         v1 = [(circle.body.position.x / WIDTH) * 2 - 1, (circle.body.position.y / HEIGHT) * 2 - 1, (circle.body.velocity.x / MAX_VELOCITY) * 2 - 1, (circle.body.velocity.y / MAX_VELOCITY) * 2 - 1]
         v2 = [(agent2.body.position.x / WIDTH) * 2 - 1, (agent2.body.position.y / HEIGHT) * 2 - 1, (agent2.body.velocity.x / MAX_VELOCITY) * 2 - 1, (agent2.body.velocity.y / MAX_VELOCITY) * 2 - 1]
@@ -104,8 +106,6 @@ def run(window, model1, model2, model3, model4, width, height):
         input_tensor2 = 1 * torch.tensor(in2, dtype=torch.float32).unsqueeze(0)
         input_tensor3 = -1 * torch.tensor(in3, dtype=torch.float32).unsqueeze(0)
         input_tensor4 = -1 * torch.tensor(in4, dtype=torch.float32).unsqueeze(0)
-
-        print(v1)
 
         y1 = model1.forward(input_tensor1)
         y2 = model2.forward(input_tensor2)
