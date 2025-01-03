@@ -56,19 +56,19 @@ def create_circle(space, radius, mass, position, color):
 def run(window, model1, model2, model3, model4, width, height):
     run = True
     clock = pygame.time.Clock()
-    fps = 10
+    fps = 60
     dt = 1 / fps
 
     space = pymunk.Space()
     space.gravity = (0, 0)
 
-    circle = create_circle(space, 15, 10, (300, 300), (255, 0, 0, 100))
-    agent2 = create_circle(space, 15, 10, (300, 400), (255, 0, 0, 100))
+    circle = create_circle(space, 20, 10, (300, 300), (255, 0, 0, 100))
+    agent2 = create_circle(space, 20, 10, (300, 400), (255, 0, 0, 100))
 
-    agent3 = create_circle(space, 15, 10, (WIDTH - 300, 300), (255, 125, 180, 100))
-    agent4 = create_circle(space, 15, 10, (WIDTH - 300, 400), (255, 125, 180, 100))
+    agent3 = create_circle(space, 20, 10, (WIDTH - 300, 300), (255, 125, 180, 100))
+    agent4 = create_circle(space, 20, 10, (WIDTH - 300, 400), (255, 125, 180, 100))
 
-    soccer_ball = create_circle(space, 7.5, 4, (500, 400), (0, 0, 0, 100))
+    soccer_ball = create_circle(space, 10, 4, (500, 400), (0, 0, 0, 100))
     create_boundaries(space, width, height)
 
     draw_options = pymunk.pygame_util.DrawOptions(window)
@@ -157,6 +157,18 @@ def run(window, model1, model2, model3, model4, width, height):
         clock.tick(fps)
 
     pygame.quit()
+
+import torch
+
+def load_model(model, filepath):
+    # Load the state_dict into the model
+    model.load_state_dict(torch.load(filepath))
+    model.eval()  # Set the model to evaluation mode if needed
+
+# Example usage:
+model = PolicyNetwork.NueralNetwork()  # Or whatever model class you're using
+load_model(model, "model_0.pth")
+
 
 model1 = PolicyNetwork.NueralNetwork()
 model2 = PolicyNetwork.NueralNetwork()

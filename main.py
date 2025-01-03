@@ -10,6 +10,7 @@
 
 
 import concurrent.futures
+import os
 from multiprocessing import freeze_support
 import Environment
 import PolicyNetwork
@@ -94,7 +95,7 @@ def simulate_generation(agent_list, matches):
         for future in concurrent.futures.as_completed(futures):
             match_result, match = future.result()  # result is a tuple (result, match)
 
-            print(match_result)
+            #print(match_result)
 
             # Update agent_wins based on match result
             idx1, idx2, idx3, idx4 = match
@@ -138,12 +139,13 @@ def mutate_model(model, mutation_rate=0.1, mutation_strength=0.05):
     new_model.load_state_dict(new_state_dict)
     return new_model
 
-def save_model(model, filepath="model_0.pth"):
+def save_model(model, generation_num):
     # Save the model's state_dict
+    filepath = os.path.join("models", f"model_{generation_num}.pth")
     torch.save(model.state_dict(), filepath)
 
 
-def generation_step(agent_list, matches):
+def generation_step(agent_list, matches, generation_num):
     # Simulate the generation to get the win list
     agent_list, win_list = simulate_generation(agent_list, matches)
 
@@ -166,7 +168,9 @@ def generation_step(agent_list, matches):
 
     max_idx = win_list.index(max(win_list))
     best_agent = agent_list[max_idx]
-    save_model(best_agent)
+    save_model(best_agent, generation_num)
+
+    print("Generation " + str(generation_num) + " is complete")
 
     return next_generation
 
@@ -175,16 +179,7 @@ if __name__ == "__main__":
     agent_list = initialize_agents()
     matches = generate_matches()
 
+    generation_num = 0
     while True:
-        agent_list = generation_step(agent_list, matches)
-
-    # import torch
-    #
-    # modelA = initialize_agents()[0]
-    # model = mutate_model(modelA)
-
-    # for name, param in model.named_parameters():
-    #     print(f"{name} - Shape: {param.shape}")
-    #     print(param)  # This will print the values of the weights/biases
-
-
+        agent_list = generation_step(agent_list, matches, generation_num)
+        generation_num += 1

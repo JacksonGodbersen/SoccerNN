@@ -61,13 +61,13 @@ class Environment:
         space = pymunk.Space()
         space.gravity = (0, 0)
 
-        agent1 = create_circle(space, 30, 10, (300, 300), (255, 0, 0, 100))
-        agent2 = create_circle(space, 30, 10, (300, 400), (255, 0, 0, 100))
+        agent1 = create_circle(space, 20, 10, (300, 300), (255, 0, 0, 100))
+        agent2 = create_circle(space, 20, 10, (300, 400), (255, 0, 0, 100))
 
-        agent3 = create_circle(space, 30, 10, (self.WIDTH - 300, 300), (255, 125, 180, 100))
-        agent4 = create_circle(space, 30, 10, (self.WIDTH - 300, 400), (255, 125, 180, 100))
+        agent3 = create_circle(space, 20, 10, (self.WIDTH - 300, 300), (255, 125, 180, 100))
+        agent4 = create_circle(space, 20, 10, (self.WIDTH - 300, 400), (255, 125, 180, 100))
 
-        soccer_ball = create_circle(space, 15, 4, (500, 400), (0, 0, 0, 100))
+        soccer_ball = create_circle(space, 10, 4, (500, 400), (0, 0, 0, 100))
         create_boundaries(space, self.WIDTH, self.HEIGHT)
 
         #draw_options = pymunk.pygame_util.DrawOptions(self.window)
